@@ -1,0 +1,138 @@
+const request = require('superagent');
+const jsdom = require('jsdom');
+const { JSDOM } = jsdom;
+const { getTags } = require('../lib/tagger');
+const { getJobType } = require('../lib/jobType');
+const { render } = require('../lib/render');
+
+function parseItem(item) {
+    const splited = item.content.split(/\n<p>|<\/p><p>|<\/p>\n/).filter(i => i);
+    const [
+        title,
+        date,
+        region,
+        salary
+    ] = splited;
+
+    return new Promise((resolve, reject) => {
+        request
+            .get(item.link)
+            .end(function(err, res) {
+                if(err) {
+                    console.log(err);
+                    reject(err);
+                    return;
+                }
+
+                const dom = new JSDOM(res.text);
+                const element = dom.window.document.querySelector('.b-vacancy-desc-wrapper');
+                const title = dom.window.document.querySelector('.companyname').textContent;
+                const pureContent = element.textContent;
+                const tags = getTags(pureContent);
+
+                resolve(render({
+                    title,
+                    location: region.split(': ')[1] || region,
+                    salary: `ЗП: ${salary.split(': ')[1] || salary}`,
+                    tags,
+                    description: element.innerHTML,
+                    link: item.link,
+                    jobType: getJobType(pureContent),
+                    important: Array.from(element.querySelectorAll('strong')).map(e => e.textContent)
+                }))
+            });
+    });
+}
+
+function getKey(item) {
+    return item.link;
+}
+
+function isValid() {
+    return true
+}
+
+module.exports = {
+    getKey,
+    isValid,
+    parseItem
+};const htmlToText = require('html-to-text');
+const whiteSpaceRegex = /^\s*$/;
+
+function render({
+    title, location, salary, tags, description, link, important = [], jobType='' 
+}) {
+    let formattedDescription = htmlToText
+        .fromString(description, {
+            wordwrap: null,
+            noLinkBrackets: true,
+            hideLinkHrefIfSameAsText: true,
+            format: {
+                unorderedList: function formatUnorderedList(elem, fn, options) {
+                    let result = '';
+                    const nonWhiteSpaceChildren = (elem.children || []).filter(
+                        c => c.type !== 'text' || !whiteSpaceRegex.test(c.data)
+                    );
+                    nonWhiteSpaceChildren.forEach(function(elem) {
+                        result += ' <b>●</b> ' + fn(elem.children, options) + '\n';
+                    });
+                    return '\n' + result + '\n';
+                }
+            }
+        })
+        .replace(/\n\s*\n/g, '\n');
+
+    important.filter(text => text.includes(':')).forEach(text => {
+        formattedDescription = formattedDescription.replace(
+            new RegExp(text, 'g'),
+            `<b>${text}</b>`
+        )
+    });
+
+    const formattedTags = tags.map(t => '#' + t).join(' ');
+    const locationFormatted = location ? `#${location.replace(/ |-/g, '_')} `: '';
+
+    return `<b>${title}</b>\n${locationFormatted}#${jobType}\n<b>${salary}</b>\n${formattedTags}\n${formattedDescription}\n${link}`;
+}
+
+module.exports = {
+    render
+};const Az = require('az');
+const namesMap = require('../resources/tagNames.json');
+
+function onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+}
+
+function getTags(pureContent) {
+    const tokens = Az.Tokens(pureContent).done();
+    const tags = tokens.filter(t => t.type.toString() === 'WORD')
+        .map(t => t.toString().toLowerCase().replace('-', '_'))
+        .map(name => namesMap[name])
+        .filter(t => t)
+        .filter(onlyUnique);
+    return tags;
+}
+
+module.exports = {
+    getTags
+};{
+  "js": "JS",
+  "javascript": "JS",
+  "sql": "SQL",
+  "ангуляр": "Angular",
+  "angular": "Angular",
+  "angularjs": "Angular",
+  "react": "React",
+  "reactjs": "React",
+  "реакт": "React",
+  "node": "NodeJS",
+  "nodejs": "NodeJS",
+  "linux": "Linux",
+  "ubuntu": "Ubuntu",
+  "unix": "UNIX",
+  "windows": "Windows"
+   ....
+}
+
+
