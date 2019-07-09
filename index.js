@@ -1,10 +1,26 @@
-const TelegramBot = require('node-telegram-bot-api')
-const TOKEN= '833678201:AAH0ZdPrbCeI4JN475Wl4zQl0KV84S6pVMc'
 
-const bot =new TelegramBot(TOKEN, {polling: true})
+var telegram = require('telegram-bot-api');
 
-bot.on('message', msg => {
-  bot.sendMessage(msg.chat.id, 'hello fom j,bot says:"hi, ${msg.from.first_name}"')
-}
+var api = new telegram({
+    token: '833678201:AAH0ZdPrbCeI4JN475Wl4zQl0KV84S6pVMc',
+    updates: {
+                enabled: true,
+                get_interval: 1000
+             }
+});
+api.on('message', function(message)
+{
+    var chat_id = message.chat.id;
+        console.log("This is the user's chat id"+chat_id);
 
+api.sendPhoto({
+    chat_id : message.chat.id,
+    caption: 'This is my test image',
+    photo: 'image.jpeg'//replace your image url here
+})
+.then(function(data)
+{
+    console.log(data);
+});
+});
   
