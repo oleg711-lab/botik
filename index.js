@@ -16,7 +16,7 @@ api.on('message', function(message)
 api.sendPhoto({
     chat_id : message.chat.id,
     caption: 'This is my test image',
-    photo: 'image.jpeg'//replace your image url here
+    photo: 'https://telegram-store.com/wp-content/uploads/2016/11/Kak-skopirovat-ssylku-v-Telegramme-dlya-priglasheniya-polzovatelej.png'//replace your image url here    
 })
 .then(function(data)
 {
