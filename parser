@@ -1,3 +1,7 @@
+const  TelegramBot  =  require ('node-telegram-bot-api'))
+const  TOKEN =  ' 833678201:aah0zdprbcei4jn475wl4zql0kv84s6pvmc '
+
+const  bot  = new  TelegramBot (TOKEN, {polling:  true})
 const request = require('superagent');
 const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
