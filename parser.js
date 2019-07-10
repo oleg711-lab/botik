@@ -1,17 +1,24 @@
 var telegram = require('telegram-bot-api');
 
 var api = new telegram({
-    token: '<833678201:aah0zdprbcei4jn475wl4zql0kv84s6pv>',
+    token: '833678201:AAH0ZdPrbCeI4JN475Wl4zQl0KV84S6pVMc',
+    updates: {
+                enabled: true,
+                get_interval: 100
+             }
 });
+api.on('message', function(message)
+{
+    var chat_id = message.chat.id;
+        console.log("This is the user's chat id"+chat_id);
 
 api.sendPhoto({
-    chat_id: <YOUR CHAT ID>,
+    chat_id : message.chat.id,
     caption: 'This is my test image',
-
-   you can also send file_id here as string (as described in telegram bot api documentation)
-    photo: 'https://core.telegram.org/file/811140217/1/NkRCCLeQZVc/17a804837802700ea4'
+    photo: 'https://core.telegram.org/file/811140217/1/NkRCCLeQZVc/17a804837802700ea4'//replace your image url here
 })
 .then(function(data)
 {
-    console.log(util.inspect(data, false, null));
+    console.log(data);
+});
 });
