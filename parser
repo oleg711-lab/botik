@@ -1,7 +1,3 @@
-const TelegramBot = require ('node-telegram-bot-api')))
-const TOKEN = ' 833678201:aah0zdprbcei4jn475wl4zql0kv84s6pvmc '
-
-const bot = new TelegramBot (TOKEN, {polling: true})
 var telegram = require('telegram-bot-api');
 
 var api = new telegram({
@@ -13,7 +9,7 @@ api.sendPhoto({
     caption: 'This is my test image',
 
     // you can also send file_id here as string (as described in telegram bot api documentation)
-    photo: '/path/to/file/test.jpg'
+    photo: 'https://core.telegram.org/file/811140217/1/NkRCCLeQZVc/17a804837802700ea4'
 })
 .then(function(data)
 {
