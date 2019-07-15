@@ -5,6 +5,6 @@ const bot =new TelegramBot(TOKEN, {polling: true})
 
 
 бот .on ('сообщение', msg  =>> {
-  бот .sendMessage (msg .болтовня .id, ' hello FOM j,бот говорит:"sdoor spo"')
+  бот .sendMessage (msg .болтовня .id, ' weat j,бот говорит:"sdoor spo"')
 
 })
